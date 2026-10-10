@@ -65,6 +65,15 @@ Planned:
 ./gradlew test
 ```
 
+## Lint
+
+Planned: Spotless with google-java-format.
+
+```bash
+./gradlew spotlessCheck
+./gradlew spotlessApply
+```
+
 ## Seed data
 
 Planned: one administrator user and the sample Kedarkantha trek with its six checkpoints and a few participants. Credentials will be documented here once the migration exists.

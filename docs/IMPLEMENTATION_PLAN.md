@@ -49,6 +49,7 @@ A private GitHub repo `indiahikes-backend-assignment-ArushNaudiyal` containing:
 | Audit | Spring Data JPA Auditing (`AuditorAware`) | Automatic created/updated metadata incl. "who" | Requires security context; falls back to `system` |
 | Validation | Jakarta Bean Validation on request DTOs | Declarative, consistent 400 responses | — |
 | Tests | JUnit 5 + Mockito + AssertJ + `@WebMvcTest` | PRD-mandated stack | — |
+| Formatting / lint | Spotless + google-java-format | Consistent style, enforceable in CI | Opinionated formatting |
 | Container | Multi-stage Dockerfile (Eclipse Temurin 21) + Compose | One-command run per PRD | Build time inside Docker is longer; layer caching mitigates |
 
 ---
@@ -373,7 +374,7 @@ Base path: `/api`. All endpoints except `/auth/login` and `/health` require JWT.
 ### Phase 0 — Setup (≈ 1 h)
 
 1. Create **private** GitHub repo `indiahikes-backend-assignment-ArushNaudiyal`. Collaborators (`KartikWatts`, `Manasa-NL`) are deferred.
-2. Spring Initializr skeleton: Boot 3.3, Java 21, Gradle Kotlin DSL, deps: web, security, data-jpa, validation, flyway, postgresql, h2 (test), jjwt, springdoc-openapi, lombok (or Java records only — see decision below).
+2. Spring Initializr skeleton: Boot 3.3, Java 21, Gradle Kotlin DSL, deps: web, security, data-jpa, validation, flyway, postgresql, h2 (test), jjwt, springdoc-openapi, lombok (or Java records only — see decision below). Add the Spotless Gradle plugin (google-java-format).
 3. Multi-stage `Dockerfile` + `docker-compose.yml` (app + postgres + healthcheck + depends_on).
 4. README skeleton, `.gitignore`, Gradle wrapper committed.
 
@@ -425,7 +426,7 @@ See Section 8. Target: green `gradle test` with meaningful coverage of business 
 
 1. README (setup, build, run, Docker, auth, test commands, seed data).
 2. DOMAIN_MODEL.md, DECISIONS.md, SELF_REVIEW.md, TEST_NOTES.md.
-3. Final `docker compose up` end-to-end pass.
+3. Run `./gradlew spotlessCheck build`, then a final `docker compose up` end-to-end pass.
 4. **Collect AI session logs** (PRD asks for them if AI tools were used — export this conversation).
 
 **Deliverable:** submission-ready repo.
@@ -480,6 +481,8 @@ flowchart LR
 ./gradlew test                 # all tests
 ./gradlew test --tests '*DelayDetectionServiceTest'
 ./gradlew build                # tests + jar
+./gradlew spotlessCheck        # lint / format check
+./gradlew spotlessApply        # auto-fix formatting
 docker compose up --build      # full stack
 ```
 
