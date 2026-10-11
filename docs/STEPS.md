@@ -22,7 +22,7 @@ Workflow for every step: explain what and why, read the diff, answer questions, 
   Be able to say: how profiles and environment variables give multi-environment config.
 - [x] **0.4 Ignore and env files.** `.gitignore` (build output, `.gradle/`, `.idea/`, `.env`) and `.env.example`.
   Be able to say: how secrets stay out of git.
-- [ ] **0.5 Docker.** Multi-stage `Dockerfile` and `docker-compose.yml` with a PostgreSQL healthcheck and `depends_on`.
+- [x] **0.5 Docker.** Multi-stage `Dockerfile` and `docker-compose.yml` with a PostgreSQL healthcheck and `depends_on`.
   Be able to say: why multi-stage, and why `depends_on` needs a healthcheck.
 - [ ] **0.6 Verify.** `docker compose up --build` starts the empty app. `./gradlew build spotlessCheck` passes.
   Be able to say: what proves the empty app starts.
