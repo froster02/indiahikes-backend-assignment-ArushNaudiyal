@@ -44,7 +44,7 @@ Workflow for every step: explain what and why, read the diff, answer questions, 
   Be able to say: JWT structure, signing, expiry.
 - [x] **2.2 Filter and SecurityConfig.** Stateless filter chain and role rules.
   Be able to say: the filter chain order and which endpoints are public.
-- [ ] **2.3 AuthController and BCrypt.** Login flow.
+- [x] **2.3 AuthController and BCrypt.** Login flow.
   Be able to say: the login flow, and why passwords are hashed.
 - [ ] **2.4 AuditorAware.** Fills created-by from the JWT principal, falls back to `system`.
   Be able to say: how created-by gets filled in.

@@ -30,6 +30,10 @@ public class JwtService {
     this.clock = clock;
   }
 
+  public Duration getTtl() {
+    return ttl;
+  }
+
   /** Creates a token with the username as subject, the role as a claim and an expiry. */
   public String generateToken(String username, UserRole role) {
     Instant now = clock.instant();
