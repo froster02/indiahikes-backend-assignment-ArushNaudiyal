@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Phases 0 and 1 done (steps 0.1 to 1.4).
 
-Build and run: Gradle skeleton (`settings.gradle.kts`, `build.gradle.kts` with Spring Boot 3.3.13, Java 21 toolchain, Spotless, Gradle 8.14.3 wrapper). `src/main/resources/application.yml` has `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck) and `.dockerignore`. `./gradlew build -x test spotlessCheck` passes on JDK 21.
+Build and run: Gradle skeleton (`settings.gradle.kts`, `build.gradle.kts` with Spring Boot 3.3.13, Java 21 toolchain, Spotless, Gradle 8.14.3 wrapper). `src/main/resources/application.yml` has `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck; the database is published on `127.0.0.1:5432` for local DB clients) and `.dockerignore`. `./gradlew build -x test spotlessCheck` passes on JDK 21.
 
 Domain: `domain` package holds the four enums, `BaseEntity` (UUID id and audit fields) and the entities `User`, `Trek`, `Checkpoint`, `Participant`, `CheckIn`, `Alert`. `common/ClockConfig` provides the `Clock` bean and `config/JpaAuditingConfig` turns on auditing with that clock. `createdBy` stays empty until the auditor in step 2.4. Hibernate created all six tables on PostgreSQL 16 from these mappings.
 
