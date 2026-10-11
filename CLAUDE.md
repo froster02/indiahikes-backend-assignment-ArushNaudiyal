@@ -13,9 +13,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Phase 0 done (steps 0.1 to 0.6). Gradle skeleton: `settings.gradle.kts`, `build.gradle.kts` (Spring Boot 3.3.13, Java 21 toolchain, Spotless), the Gradle 8.14.3 wrapper and `TrekOpsApplication.java`. Config: `src/main/resources/application.yml` with `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck) and `.dockerignore`. `docker compose up --build` starts the app on port 8080 once `.env` has `JWT_SECRET` and `DB_PASSWORD`. `./gradlew build -x test spotlessCheck` passes on JDK 21. `docker compose up --build` was checked from a clean state: the app starts and answers HTTP 401 on port 8080. No domain code yet.
+Phase 0 done (steps 0.1 to 0.6) and step 1.1 done.
 
-Next step: 1.1. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
+Build and run: Gradle skeleton (`settings.gradle.kts`, `build.gradle.kts` with Spring Boot 3.3.13, Java 21 toolchain, Spotless, Gradle 8.14.3 wrapper). `src/main/resources/application.yml` has `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck) and `.dockerignore`. `./gradlew build -x test spotlessCheck` passes on JDK 21.
+
+Domain: `domain` package holds the four enums, `BaseEntity` (UUID id and audit fields) and the entities `User`, `Trek`, `Checkpoint`, `Participant`, `CheckIn`, `Alert`. `common/ClockConfig` provides the `Clock` bean and `config/JpaAuditingConfig` turns on auditing with that clock. `createdBy` stays empty until the auditor in step 2.4. Hibernate created all six tables on PostgreSQL 16 from these mappings.
+
+Known gap: no Flyway migrations exist yet and `ddl-auto` is `validate`, so `docker compose up --build` fails at startup until `V1__init_schema.sql` lands in step 1.3. The image built before step 1.1 still runs.
+
+Next step: 1.2. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
 
 Source of truth: `docs/BE_Assignment_PRD_Latest.md` (requirements), `docs/IMPLEMENTATION_PLAN.md` (design, phases, test inventory), `docs/STEPS.md` (build order).
 

@@ -29,7 +29,7 @@ Workflow for every step: explain what and why, read the diff, answer questions, 
 
 ## Phase 1: Domain and persistence
 
-- [ ] **1.1 Enums and entities.** `User`, `Trek`, `Checkpoint`, `Participant`, `CheckIn`, `Alert`, with JPA auditing.
+- [x] **1.1 Enums and entities.** `User`, `Trek`, `Checkpoint`, `Participant`, `CheckIn`, `Alert`, with JPA auditing.
   Be able to say: the ER diagram, why UUIDs, what the audit fields track.
 - [ ] **1.2 Repositories.** Including the alert idempotency query.
   Be able to say: how duplicate alerts are prevented.
