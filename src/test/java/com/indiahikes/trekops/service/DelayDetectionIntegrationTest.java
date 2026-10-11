@@ -56,6 +56,7 @@ class DelayDetectionIntegrationTest {
         checkInRepository,
         alertRepository,
         new DelayCheckProperties(true, 60000, 0),
+        event -> {},
         Clock.fixed(now, ZoneOffset.UTC));
   }
 

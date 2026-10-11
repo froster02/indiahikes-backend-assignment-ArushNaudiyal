@@ -70,7 +70,7 @@ Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.m
   Be able to say: the delay rule, and why the clock is injected.
 - [x] **4.3 Scheduler.** `@Scheduled` with config toggle and interval.
   Be able to say: why `@Scheduled`, and what breaks with multiple nodes.
-- [ ] **4.4 Notifications.** `AlertCreatedEvent`, `NotificationChannel`, log channel.
+- [x] **4.4 Notifications.** `AlertCreatedEvent`, `NotificationChannel`, log channel.
   Be able to say: how an email channel would be added.
 
 ## Phase 5: Tests

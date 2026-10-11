@@ -7,6 +7,7 @@ import com.indiahikes.trekops.domain.Participant;
 import com.indiahikes.trekops.domain.ParticipantStatus;
 import com.indiahikes.trekops.domain.Trek;
 import com.indiahikes.trekops.domain.TrekStatus;
+import com.indiahikes.trekops.notification.AlertCreatedEvent;
 import com.indiahikes.trekops.repository.AlertRepository;
 import com.indiahikes.trekops.repository.CheckInRepository;
 import com.indiahikes.trekops.repository.CheckpointRepository;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
  * {@code trek.startAt + checkpoint.expectedAfterHours + grace} has passed, and the participant has
  * no check-in there. A pair that already has an alert, in any status, gets no new one, so running
  * the check again never creates duplicates and a resolved alert is not raised again.
+ *
+ * <p>Each new alert publishes an {@link AlertCreatedEvent} for the notification channels.
  */
 @Service
 public class DelayDetectionService {
@@ -40,6 +44,7 @@ public class DelayDetectionService {
   private final ParticipantRepository participantRepository;
   private final CheckInRepository checkInRepository;
   private final AlertRepository alertRepository;
+  private final ApplicationEventPublisher events;
   private final Duration grace;
   private final Clock clock;
 
@@ -50,12 +55,14 @@ public class DelayDetectionService {
       CheckInRepository checkInRepository,
       AlertRepository alertRepository,
       DelayCheckProperties properties,
+      ApplicationEventPublisher events,
       Clock clock) {
     this.trekRepository = trekRepository;
     this.checkpointRepository = checkpointRepository;
     this.participantRepository = participantRepository;
     this.checkInRepository = checkInRepository;
     this.alertRepository = alertRepository;
+    this.events = events;
     this.grace = Duration.ofMinutes(properties.graceMinutes());
     this.clock = clock;
   }
@@ -85,7 +92,9 @@ public class DelayDetectionService {
       for (Participant participant : onTrek) {
         for (Checkpoint checkpoint : overdue) {
           if (needsAlert(participant, checkpoint)) {
-            created.add(alertRepository.save(new Alert(participant, checkpoint)));
+            Alert alert = alertRepository.save(new Alert(participant, checkpoint));
+            created.add(alert);
+            events.publishEvent(toEvent(alert, trek, participant, checkpoint));
           }
         }
       }
@@ -97,9 +106,23 @@ public class DelayDetectionService {
   }
 
   private boolean isOverdue(Trek trek, Checkpoint checkpoint, Instant now) {
-    Instant expectedAt =
-        trek.getStartAt().plus(Duration.ofHours(checkpoint.getExpectedAfterHours())).plus(grace);
-    return now.isAfter(expectedAt);
+    return now.isAfter(expectedAt(trek, checkpoint).plus(grace));
+  }
+
+  private static Instant expectedAt(Trek trek, Checkpoint checkpoint) {
+    return trek.getStartAt().plus(Duration.ofHours(checkpoint.getExpectedAfterHours()));
+  }
+
+  private static AlertCreatedEvent toEvent(
+      Alert alert, Trek trek, Participant participant, Checkpoint checkpoint) {
+    return new AlertCreatedEvent(
+        alert.getId(),
+        participant.getName(),
+        participant.getPhone(),
+        trek.getName(),
+        checkpoint.getName(),
+        expectedAt(trek, checkpoint),
+        alert.getCreatedAt());
   }
 
   private boolean needsAlert(Participant participant, Checkpoint checkpoint) {

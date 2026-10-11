@@ -14,6 +14,7 @@ import com.indiahikes.trekops.domain.Participant;
 import com.indiahikes.trekops.domain.ParticipantStatus;
 import com.indiahikes.trekops.domain.Trek;
 import com.indiahikes.trekops.domain.TrekStatus;
+import com.indiahikes.trekops.notification.AlertCreatedEvent;
 import com.indiahikes.trekops.repository.AlertRepository;
 import com.indiahikes.trekops.repository.CheckInRepository;
 import com.indiahikes.trekops.repository.CheckpointRepository;
@@ -22,6 +23,7 @@ import com.indiahikes.trekops.repository.TrekRepository;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +41,7 @@ class DelayDetectionServiceTest {
   private final ParticipantRepository participantRepository = mock(ParticipantRepository.class);
   private final CheckInRepository checkInRepository = mock(CheckInRepository.class);
   private final AlertRepository alertRepository = mock(AlertRepository.class);
+  private final List<Object> published = new ArrayList<>();
 
   private Trek trek;
   private Checkpoint sankri;
@@ -71,6 +74,7 @@ class DelayDetectionServiceTest {
         checkInRepository,
         alertRepository,
         new DelayCheckProperties(true, 60000, graceMinutes),
+        published::add,
         Clock.fixed(now, ZoneOffset.UTC));
   }
 
@@ -81,6 +85,24 @@ class DelayDetectionServiceTest {
     assertThat(created).hasSize(1);
     assertThat(created.get(0).getParticipant()).isSameAs(aarav);
     assertThat(created.get(0).getCheckpoint()).isSameAs(sankri);
+  }
+
+  @Test
+  void eachNewAlertPublishesAnEventForTheNotificationChannels() {
+    serviceAt(SANKRI_DUE.plusSeconds(60), 0).detectDelays();
+
+    assertThat(published).hasSize(1);
+    AlertCreatedEvent event = (AlertCreatedEvent) published.get(0);
+    assertThat(event.participantName()).isEqualTo("Aarav Sharma");
+    assertThat(event.checkpointName()).isEqualTo("Sankri");
+    assertThat(event.expectedAt()).isEqualTo(SANKRI_DUE);
+  }
+
+  @Test
+  void noAlertMeansNoEvent() {
+    serviceAt(SANKRI_DUE.minusSeconds(60), 0).detectDelays();
+
+    assertThat(published).isEmpty();
   }
 
   @Test
