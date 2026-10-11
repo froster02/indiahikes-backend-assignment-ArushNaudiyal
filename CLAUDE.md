@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Phase 0 done (steps 0.1 to 0.6) and steps 1.1 to 1.3 done.
+Phases 0 and 1 done (steps 0.1 to 1.4).
 
 Build and run: Gradle skeleton (`settings.gradle.kts`, `build.gradle.kts` with Spring Boot 3.3.13, Java 21 toolchain, Spotless, Gradle 8.14.3 wrapper). `src/main/resources/application.yml` has `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck) and `.dockerignore`. `./gradlew build -x test spotlessCheck` passes on JDK 21.
 
@@ -23,7 +23,9 @@ Repositories: `repository` package has one Spring Data interface per entity. Not
 
 Schema: `src/main/resources/db/migration/V1__init_schema.sql` creates the six tables with foreign keys, CHECK constraints on status values, unique constraints (username, trek and sequence number, participant and checkpoint for check-ins) and indexes. `ddl-auto` is `validate`, so Hibernate checks the entities against it at startup. `docker compose up --build` from a clean volume applies the migration and starts the app (HTTP 401 on port 8080). The same SQL ran without errors on H2 in PostgreSQL mode; the app itself has not run on H2 yet.
 
-Next step: 1.4. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
+Seed data: `V2__seed_data.sql` adds users `admin` (ADMIN, password `Admin@12345`) and `ops` (OPERATIONS, password `Ops@12345`) stored as BCrypt hashes, the ACTIVE `Kedarkantha Trek` (start 2026-08-10 06:00 IST) with the six PRD checkpoints, and three participants (two `ON_TREK`, one `REGISTERED`). Because the trek started in the past, the delay scheduler of step 4.3 will raise alerts for both `ON_TREK` participants as soon as it runs. These demo passwords are for review only.
+
+Next step: 2.1. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
 
 Source of truth: `docs/BE_Assignment_PRD_Latest.md` (requirements), `docs/IMPLEMENTATION_PLAN.md` (design, phases, test inventory), `docs/STEPS.md` (build order).
 
