@@ -84,7 +84,7 @@ Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.m
 
 ## Phase 6: Docs and finish
 
-- [ ] **6.1 DOMAIN_MODEL.md and DECISIONS.md.**
+- [x] **6.1 DOMAIN_MODEL.md and DECISIONS.md.**
   Be able to say: each entity, state, constraint, and the trade-off behind each choice.
 - [ ] **6.2 SELF_REVIEW.md and TEST_NOTES.md.**
   Be able to say: the weaknesses, the limits, and which AI-assisted parts were reviewed hardest.
