@@ -75,7 +75,7 @@ Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.m
 
 ## Phase 5: Tests
 
-- [ ] **5.1 Service tests.** Delay logic, idempotency, check-in rules, alert transitions.
+- [x] **5.1 Service tests.** Delay logic, idempotency, check-in rules, alert transitions.
   Be able to say: what each test proves, and why it uses mocks or a fixed clock.
 - [ ] **5.2 Controller tests.** RBAC, validation, search, error shape.
   Be able to say: what a `@WebMvcTest` slice covers and what it does not.

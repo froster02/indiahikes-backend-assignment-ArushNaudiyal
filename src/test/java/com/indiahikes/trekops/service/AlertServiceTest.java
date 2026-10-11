@@ -23,10 +23,14 @@ import com.indiahikes.trekops.web.dto.AlertResponse;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 class AlertServiceTest {
 
@@ -102,6 +106,27 @@ class AlertServiceTest {
         .isInstanceOf(BusinessRuleException.class);
     assertThatThrownBy(() -> service.acknowledge(alertId, "ops"))
         .isInstanceOf(BusinessRuleException.class);
+  }
+
+  @Test
+  void listWithoutStatusReturnsEveryAlert() {
+    Pageable page = PageRequest.of(0, 20);
+    when(alertRepository.findAllBy(page)).thenReturn(new PageImpl<>(List.of(alert), page, 1));
+
+    assertThat(service.list(null, page).content())
+        .extracting(AlertResponse::checkpointName)
+        .containsExactly("Sankri");
+    verify(alertRepository, never()).findByStatus(any(), any());
+  }
+
+  @Test
+  void listWithStatusFilters() {
+    Pageable page = PageRequest.of(0, 20);
+    when(alertRepository.findByStatus(AlertStatus.OPEN, page))
+        .thenReturn(new PageImpl<>(List.of(alert), page, 1));
+
+    assertThat(service.list(AlertStatus.OPEN, page).totalElements()).isEqualTo(1);
+    verify(alertRepository, never()).findAllBy(any());
   }
 
   @Test

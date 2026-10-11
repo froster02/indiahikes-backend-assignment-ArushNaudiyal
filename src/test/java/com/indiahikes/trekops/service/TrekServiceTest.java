@@ -16,6 +16,7 @@ import com.indiahikes.trekops.exception.ConflictException;
 import com.indiahikes.trekops.exception.ResourceNotFoundException;
 import com.indiahikes.trekops.repository.CheckpointRepository;
 import com.indiahikes.trekops.repository.TrekRepository;
+import com.indiahikes.trekops.web.dto.CheckpointResponse;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +54,15 @@ class TrekServiceTest {
   @Test
   void aNewTrekStartsAsPlanned() {
     assertThat(service.create("New Trek", START, END).status()).isEqualTo(TrekStatus.PLANNED);
+  }
+
+  @Test
+  void detailListsCheckpointsInSequenceOrder() {
+    givenCheckpoints(new Checkpoint(trek, "Dehradun", 1, 0), new Checkpoint(trek, "Sankri", 2, 8));
+
+    assertThat(service.get(trekId).checkpoints())
+        .extracting(CheckpointResponse::name)
+        .containsExactly("Dehradun", "Sankri");
   }
 
   @Test

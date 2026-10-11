@@ -8,10 +8,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.indiahikes.trekops.domain.CheckIn;
+import com.indiahikes.trekops.domain.Checkpoint;
 import com.indiahikes.trekops.domain.Participant;
 import com.indiahikes.trekops.domain.ParticipantStatus;
 import com.indiahikes.trekops.domain.Trek;
 import com.indiahikes.trekops.domain.TrekStatus;
+import com.indiahikes.trekops.domain.User;
+import com.indiahikes.trekops.domain.UserRole;
 import com.indiahikes.trekops.exception.BusinessRuleException;
 import com.indiahikes.trekops.exception.InvalidRequestException;
 import com.indiahikes.trekops.exception.ResourceNotFoundException;
@@ -19,6 +23,7 @@ import com.indiahikes.trekops.repository.CheckInRepository;
 import com.indiahikes.trekops.repository.ParticipantRepository;
 import com.indiahikes.trekops.repository.TrekRepository;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,6 +67,30 @@ class ParticipantServiceTest {
   void registeringStartsAsRegistered() {
     assertThat(service.register(trekId, "Diya Mehta", "+91 90000 00002", "Mother").status())
         .isEqualTo(ParticipantStatus.REGISTERED);
+  }
+
+  @Test
+  void detailIncludesTheCheckInsInTimeOrder() {
+    Checkpoint dehradun = new Checkpoint(trek, "Dehradun", 1, 0);
+    User ops = new User("ops", "hash", UserRole.OPERATIONS);
+    when(checkInRepository.findByParticipantIdOrderByCheckedInAt(participantId))
+        .thenReturn(
+            List.of(
+                new CheckIn(participant, dehradun, Instant.parse("2026-08-10T00:20:00Z"), ops)));
+
+    var detail = service.get(participantId);
+
+    assertThat(detail.participant().name()).isEqualTo("Aarav Sharma");
+    assertThat(detail.checkIns()).extracting(c -> c.checkpointName()).containsExactly("Dehradun");
+    assertThat(detail.checkIns().get(0).recordedBy()).isEqualTo("ops");
+  }
+
+  @Test
+  void unknownParticipantIsNotFound() {
+    UUID unknown = UUID.randomUUID();
+    when(participantRepository.findById(unknown)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> service.get(unknown)).isInstanceOf(ResourceNotFoundException.class);
   }
 
   @Test
