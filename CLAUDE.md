@@ -9,6 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 * Do not commit placeholder, ambiguous, speculative or unverified content. Docs must describe what exists, not what is hoped for.
 * Do not add repository collaborators until the user asks. The PRD lists `KartikWatts` and `Manasa-NL`, deferred for now.
 * The owner must be able to explain every file in a follow-up discussion, so keep code simple and readable over clever.
+* Log every problem that costs real time, with cause and fix, in `docs/ISSUES.md`. Add the entry in the same change that resolves it.
 
 ## Current state
 
