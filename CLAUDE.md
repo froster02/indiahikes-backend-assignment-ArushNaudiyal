@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Phases 0, 1 and 2 done (steps 0.1 to 2.4) phases 3, 4 and 5 done (steps 3.1 to 5.3). All code is in place; phase 6 is documentation. Steps 6.1 and 6.2 done: `DOMAIN_MODEL.md`, `DECISIONS.md`, `SELF_REVIEW.md` and `TEST_NOTES.md` at the repo root describe the code as built. The TEST_NOTES curl walk-through and delay recipe were run live.
+Phases 0, 1 and 2 done (steps 0.1 to 2.4) phases 3, 4 and 5 done (steps 3.1 to 5.3). All code is in place; phase 6 is documentation. Steps 6.1 and 6.2 done: `DOMAIN_MODEL.md`, `DECISIONS.md`, `SELF_REVIEW.md` and `TEST_NOTES.md` at the repo root describe the code as built. The TEST_NOTES curl walk-through and delay recipe were run live. `README.md` is final (setup, Compose, build, local run checked live, authentication, API, configuration, tests, seed data); the AI session logs for step 6.3 await the owner's decision on what to include.
 
 Build and run: Gradle skeleton (`settings.gradle.kts`, `build.gradle.kts` with Spring Boot 3.3.13, Java 21 toolchain, Spotless, Gradle 8.14.3 wrapper). `src/main/resources/application.yml` has `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck; the database is published on `127.0.0.1:5432` for local DB clients) and `.dockerignore`. `./gradlew build -x test spotlessCheck` passes on JDK 21.
 
