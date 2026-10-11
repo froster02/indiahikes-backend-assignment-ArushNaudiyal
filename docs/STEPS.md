@@ -10,7 +10,7 @@ Decisions already made:
 - `@Scheduled` for delay detection, single node only.
 - `Clock` bean injected everywhere.
 
-Workflow for every step: explain what and why, read the diff, answer questions, then commit locally. Ask before every push.
+Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.md` and flag any mismatch before changing code, explain what and why, make the change, check that the whole project still builds, passes its tests and runs in Docker, read the diff, answer questions, then commit locally. Ask before every push.
 
 ## Phase 0: Setup
 
@@ -46,7 +46,7 @@ Workflow for every step: explain what and why, read the diff, answer questions, 
   Be able to say: the filter chain order and which endpoints are public.
 - [x] **2.3 AuthController and BCrypt.** Login flow.
   Be able to say: the login flow, and why passwords are hashed.
-- [ ] **2.4 AuditorAware.** Fills created-by from the JWT principal, falls back to `system`.
+- [x] **2.4 AuditorAware.** Fills created-by from the JWT principal, falls back to `system`.
   Be able to say: how created-by gets filled in.
 
 ## Phase 3: Core APIs

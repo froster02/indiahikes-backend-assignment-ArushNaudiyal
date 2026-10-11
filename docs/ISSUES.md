@@ -28,6 +28,22 @@ Each entry has: step, symptom, cause, resolution, status.
 - **Resolution:** corrected the comment to say the secret is resolved when `JwtService` first reads it. The secret still has no default in the default profile, so no weak secret ships.
 - **Status:** resolved in step 2.1. `JwtProperties` binds and validates the setting at startup. Without `JWT_SECRET` the app stops with `Binding to target ...JwtProperties failed` for `app.security.jwtSecret`, and a secret shorter than 32 characters stops it the same way. A valid secret starts the app.
 
+## 4. Cannot connect to the database from the host
+
+- **Step:** after 1.4.
+- **Symptom:** a database client on the host could not log in to the PostgreSQL container.
+- **Cause:** three separate things. The compose file did not publish port 5432 at first. The `DB_PASSWORD` in `.env` was a random value that nobody had written down. The port is bound to `127.0.0.1` only, so a client that resolves `localhost` to the IPv6 address `::1` finds the port closed.
+- **Resolution:** published the port on `127.0.0.1:5432` in `docker-compose.yml`. Set a fixed `DB_PASSWORD` in the git-ignored `.env`. PostgreSQL reads `POSTGRES_PASSWORD` only when the data volume is first created, so the existing role was changed with `ALTER USER` instead of recreating the volume. Clients should use host `127.0.0.1`, not `localhost`.
+- **Status:** resolved. Login with the new password works from the host, a wrong password is rejected, and the app still starts and logs users in.
+
+## 5. Hibernate could not find tables on H2 in the test profile
+
+- **Step:** 2.4.
+- **Symptom:** the first test that started the app on H2 failed with `Schema-validation: missing table [alerts]`, although Flyway had applied both migrations.
+- **Cause:** the `test` profile URL carried `DATABASE_TO_UPPER=false`, which I had added in step 0.3 and never ran. With it, Flyway created lowercase table names, while Hibernate looks tables up in the upper case that H2 normally uses.
+- **Resolution:** removed `DATABASE_TO_UPPER=false` from the H2 URL in `application.yml`. Flyway and Hibernate then agree on names, and `AuditingRepositoryTest` runs the real V1 and V2 migrations on H2.
+- **Status:** resolved. Lesson: a setting is not verified until something runs it. The `test` profile was untested until this step.
+
 ## Notes (expected behaviour, not defects)
 
 - **Default profile outside Compose:** it points at host `db`, which only exists inside Docker Compose. Running it on the host fails with a connection error. Use the `local` profile for IDE runs.
