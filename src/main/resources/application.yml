@@ -1,0 +1,59 @@
+# Default profile: PostgreSQL, everything from environment variables (Docker Compose runtime).
+# JWT_SECRET has no default on purpose, so no weak secret ships in the default profile.
+# Spring resolves it when code first reads app.security.jwt-secret (JwtService, step 2.1).
+app:
+  security:
+    jwt-secret: ${JWT_SECRET}
+    token-ttl-minutes: ${TOKEN_TTL_MINUTES:480}
+  scheduler:
+    delay-check:
+      enabled: ${DELAY_CHECK_ENABLED:true}
+      interval-ms: ${DELAY_CHECK_INTERVAL_MS:60000}
+  notifications:
+    channels: ${NOTIFICATION_CHANNELS:log}
+
+spring:
+  application:
+    name: trekops
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://db:5432/trekops}
+    username: ${DB_USER:trekops}
+    password: ${DB_PASSWORD:trekops}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+---
+# local profile: run from the IDE against a PostgreSQL on localhost.
+# Start one with: docker run --rm -p 5432:5432 -e POSTGRES_DB=trekops -e POSTGRES_USER=trekops -e POSTGRES_PASSWORD=trekops postgres:16
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/trekops}
+
+app:
+  security:
+    jwt-secret: ${JWT_SECRET:local-dev-secret-local-dev-secret-0123456789}
+
+---
+# test profile: H2 in memory in PostgreSQL mode. Used by ./gradlew test.
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:trekops;MODE=PostgreSQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+
+app:
+  security:
+    jwt-secret: test-secret-test-secret-test-secret-0123456789
+  scheduler:
+    delay-check:
+      enabled: false
