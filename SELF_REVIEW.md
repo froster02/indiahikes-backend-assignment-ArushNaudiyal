@@ -58,6 +58,8 @@ The working rules in `CLAUDE.md` governed every step:
 
 That log shows six problems found by those checks rather than assumed away, including a test profile that had never run and a health check that hung while the database was down.
 
+I reviewed these AI-assisted parts carefully myself: the security and JWT setup (`SecurityConfig`, `JwtAuthFilter`, `JwtService`, login and the role rules), the delay detection (`DelayDetectionService`, the scheduler and the one-alert-per-pair rule), the check-in and alert logic (`CheckInService` rules, the 409 race handling and the alert transitions), and the schema and configuration (Flyway migrations, seed data, `application.yml` and the Docker files).
+
 Parts of the AI-written code that most deserve careful human review:
 
 * **`SecurityConfig` and `JwtAuthFilter`.** The order of the role rules, and which paths are public.
