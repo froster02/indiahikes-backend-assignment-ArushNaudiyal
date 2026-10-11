@@ -20,7 +20,7 @@ Workflow for every step: explain what and why, read the diff, answer questions, 
   Be able to say: what each dependency does, why Kotlin DSL, why `jjwt-api` is compile-scoped while `impl` and `jackson` are runtime-only.
 - [x] **0.3 Configuration.** `application.yml` with profiles (`default`, `test`, `local`) and environment variables.
   Be able to say: how profiles and environment variables give multi-environment config.
-- [ ] **0.4 Ignore and env files.** `.gitignore` (build output, `.gradle/`, `.idea/`, `.env`) and `.env.example`.
+- [x] **0.4 Ignore and env files.** `.gitignore` (build output, `.gradle/`, `.idea/`, `.env`) and `.env.example`.
   Be able to say: how secrets stay out of git.
 - [ ] **0.5 Docker.** Multi-stage `Dockerfile` and `docker-compose.yml` with a PostgreSQL healthcheck and `depends_on`.
   Be able to say: why multi-stage, and why `depends_on` needs a healthcheck.

@@ -13,9 +13,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Steps 0.1 to 0.3 done. Gradle skeleton: `settings.gradle.kts`, `build.gradle.kts` (Spring Boot 3.3.13, Java 21 toolchain, Spotless), the Gradle 8.14.3 wrapper and `TrekOpsApplication.java`. Config: `src/main/resources/application.yml` with `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `./gradlew build -x test spotlessCheck` passes on JDK 21, and the `local` profile starts against a PostgreSQL 16 container. No Dockerfile, `.gitignore`, `.env.example` or domain code yet. Those are steps 0.4, 0.5 and later.
+Steps 0.1 to 0.4 done. Gradle skeleton: `settings.gradle.kts`, `build.gradle.kts` (Spring Boot 3.3.13, Java 21 toolchain, Spotless), the Gradle 8.14.3 wrapper and `TrekOpsApplication.java`. Config: `src/main/resources/application.yml` with `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. `./gradlew build -x test spotlessCheck` passes on JDK 21, and the `local` profile starts against a PostgreSQL 16 container. No Dockerfile, compose file or domain code yet. Those are steps 0.5 and later.
 
-Next step: 0.4. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
+Next step: 0.5. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
 
 Source of truth: `docs/BE_Assignment_PRD_Latest.md` (requirements), `docs/IMPLEMENTATION_PLAN.md` (design, phases, test inventory), `docs/STEPS.md` (build order).
 
