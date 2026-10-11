@@ -33,7 +33,7 @@ Workflow for every step: explain what and why, read the diff, answer questions, 
   Be able to say: the ER diagram, why UUIDs, what the audit fields track.
 - [x] **1.2 Repositories.** Including the alert idempotency query.
   Be able to say: how duplicate alerts are prevented.
-- [ ] **1.3 Flyway V1 schema.** Constraints, including the unique check-in per participant and checkpoint.
+- [x] **1.3 Flyway V1 schema.** Constraints, including the unique check-in per participant and checkpoint.
   Be able to say: why migrations, and why the unique constraint.
 - [ ] **1.4 Flyway V2 seed.** Admin user, Kedarkantha trek with the PRD checkpoints, sample participants.
   Be able to say: which credentials are seeded and how they are stored.
