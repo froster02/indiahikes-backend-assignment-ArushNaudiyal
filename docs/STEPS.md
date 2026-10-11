@@ -92,5 +92,3 @@ Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.m
   Be able to say: a stranger can run the project from the README alone.
 - [ ] **6.4 Clean checkout test.** Clone fresh, run `docker compose up --build`.
   Be able to say: the project runs on a machine that has nothing else installed.
-- [ ] **6.5 Collaborators.** Confirm the repository is private and that `KartikWatts` and `Manasa-NL` are collaborators (`gh api repos/<owner>/<repo>/collaborators` and `.../invitations`). Ask the owner before changing anything.
-  Be able to say: who has access and why the repository stays private.
