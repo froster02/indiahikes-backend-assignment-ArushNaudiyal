@@ -66,7 +66,7 @@ Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.m
 
 - [x] **4.1 Alert endpoints.** List, acknowledge, resolve, and the state machine.
   Be able to say: the allowed transitions.
-- [ ] **4.2 DelayDetectionService.** Injected `Clock`, the delay rule.
+- [x] **4.2 DelayDetectionService.** Injected `Clock`, the delay rule.
   Be able to say: the delay rule, and why the clock is injected.
 - [ ] **4.3 Scheduler.** `@Scheduled` with config toggle and interval.
   Be able to say: why `@Scheduled`, and what breaks with multiple nodes.

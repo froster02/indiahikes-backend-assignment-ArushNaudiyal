@@ -44,28 +44,30 @@ class AlertRepositoryTest {
   }
 
   @Test
-  void idempotencyCheckSeesOpenAndAcknowledgedButNotResolved() {
-    assertThat(
-            alertRepository.existsByParticipantIdAndCheckpointIdAndStatusIn(AARAV, SANKRI, ACTIVE))
-        .isFalse();
+  void idempotencyCheckSeesAnAlertInEveryStatus() {
+    assertThat(alertRepository.existsByParticipantIdAndCheckpointId(AARAV, SANKRI)).isFalse();
 
     Alert alert = saveAlert();
-    assertThat(
-            alertRepository.existsByParticipantIdAndCheckpointIdAndStatusIn(AARAV, SANKRI, ACTIVE))
-        .isTrue();
+    assertThat(alertRepository.existsByParticipantIdAndCheckpointId(AARAV, SANKRI)).isTrue();
 
     User ops = userRepository.findByUsername("ops").orElseThrow();
-    alert.acknowledge(ops, Instant.parse("2026-08-10T12:00:00Z"));
-    alertRepository.saveAndFlush(alert);
-    assertThat(
-            alertRepository.existsByParticipantIdAndCheckpointIdAndStatusIn(AARAV, SANKRI, ACTIVE))
-        .isTrue();
-
     alert.resolve(ops, Instant.parse("2026-08-10T13:00:00Z"));
     alertRepository.saveAndFlush(alert);
-    assertThat(
-            alertRepository.existsByParticipantIdAndCheckpointIdAndStatusIn(AARAV, SANKRI, ACTIVE))
-        .isFalse();
+    // A resolved alert still counts, so the delay check does not raise it again.
+    assertThat(alertRepository.existsByParticipantIdAndCheckpointId(AARAV, SANKRI)).isTrue();
+  }
+
+  @Test
+  void activeAlertLookupIgnoresResolvedOnes() {
+    Alert alert = saveAlert();
+    assertThat(alertRepository.findByParticipantIdAndCheckpointIdAndStatusIn(AARAV, SANKRI, ACTIVE))
+        .hasSize(1);
+
+    alert.resolve(
+        userRepository.findByUsername("ops").orElseThrow(), Instant.parse("2026-08-10T13:00:00Z"));
+    alertRepository.saveAndFlush(alert);
+    assertThat(alertRepository.findByParticipantIdAndCheckpointIdAndStatusIn(AARAV, SANKRI, ACTIVE))
+        .isEmpty();
   }
 
   @Test

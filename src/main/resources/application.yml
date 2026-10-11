@@ -9,6 +9,7 @@ app:
     delay-check:
       enabled: ${DELAY_CHECK_ENABLED:true}
       interval-ms: ${DELAY_CHECK_INTERVAL_MS:60000}
+      grace-minutes: ${DELAY_CHECK_GRACE_MINUTES:0}
   notifications:
     channels: ${NOTIFICATION_CHANNELS:log}
 

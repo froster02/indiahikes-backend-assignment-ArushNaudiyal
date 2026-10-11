@@ -13,11 +13,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface AlertRepository extends JpaRepository<Alert, UUID> {
 
   /**
-   * Idempotency guard. The scheduler creates an alert only when this returns false for the statuses
-   * OPEN and ACKNOWLEDGED, so a pair never has two active alerts.
+   * Idempotency guard. The delay check creates an alert only when this returns false, so a pair
+   * gets at most one alert, whatever its status.
    */
-  boolean existsByParticipantIdAndCheckpointIdAndStatusIn(
-      UUID participantId, UUID checkpointId, Collection<AlertStatus> statuses);
+  boolean existsByParticipantIdAndCheckpointId(UUID participantId, UUID checkpointId);
 
   /** Active alerts for one pair. A check-in uses this to resolve them. */
   List<Alert> findByParticipantIdAndCheckpointIdAndStatusIn(
