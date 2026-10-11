@@ -1,6 +1,6 @@
 # Default profile: PostgreSQL, everything from environment variables (Docker Compose runtime).
 # JWT_SECRET has no default on purpose, so no weak secret ships in the default profile.
-# Spring resolves it when code first reads app.security.jwt-secret (JwtService, step 2.1).
+# JwtProperties validates it at startup: a missing secret or one shorter than 32 characters stops the app.
 app:
   security:
     jwt-secret: ${JWT_SECRET}

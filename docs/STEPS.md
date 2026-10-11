@@ -40,7 +40,7 @@ Workflow for every step: explain what and why, read the diff, answer questions, 
 
 ## Phase 2: Security
 
-- [ ] **2.1 JwtService.** Issue and parse tokens, HS256, secret and TTL from config.
+- [x] **2.1 JwtService.** Issue and parse tokens, HS256, secret and TTL from config.
   Be able to say: JWT structure, signing, expiry.
 - [ ] **2.2 Filter and SecurityConfig.** Stateless filter chain and role rules.
   Be able to say: the filter chain order and which endpoints are public.

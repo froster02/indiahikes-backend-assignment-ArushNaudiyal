@@ -26,7 +26,7 @@ Each entry has: step, symptom, cause, resolution, status.
 - **Symptom:** the first draft of `application.yml` said the app refuses to start without `JWT_SECRET`. Starting the default profile without it did not report a missing secret. It failed later on the unreachable database host `db`.
 - **Cause:** Spring resolves a `${...}` placeholder only when a bean reads the property. No code reads `app.security.jwt-secret` yet, because `JwtService` comes in step 2.1.
 - **Resolution:** corrected the comment to say the secret is resolved when `JwtService` first reads it. The secret still has no default in the default profile, so no weak secret ships.
-- **Status:** resolved. Revisit in step 2.1: check that startup fails clearly when `JWT_SECRET` is missing.
+- **Status:** resolved in step 2.1. `JwtProperties` binds and validates the setting at startup. Without `JWT_SECRET` the app stops with `Binding to target ...JwtProperties failed` for `app.security.jwtSecret`, and a secret shorter than 32 characters stops it the same way. A valid secret starts the app.
 
 ## Notes (expected behaviour, not defects)
 

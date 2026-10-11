@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Phases 0 and 1 done (steps 0.1 to 1.4).
+Phases 0 and 1 done (steps 0.1 to 1.4) and step 2.1 done.
 
 Build and run: Gradle skeleton (`settings.gradle.kts`, `build.gradle.kts` with Spring Boot 3.3.13, Java 21 toolchain, Spotless, Gradle 8.14.3 wrapper). `src/main/resources/application.yml` has `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck; the database is published on `127.0.0.1:5432` for local DB clients) and `.dockerignore`. `./gradlew build -x test spotlessCheck` passes on JDK 21.
 
@@ -25,7 +25,9 @@ Schema: `src/main/resources/db/migration/V1__init_schema.sql` creates the six ta
 
 Seed data: `V2__seed_data.sql` adds users `admin` (ADMIN, password `Admin@12345`) and `ops` (OPERATIONS, password `Ops@12345`) stored as BCrypt hashes, the ACTIVE `Kedarkantha Trek` (start 2026-08-10 06:00 IST) with the six PRD checkpoints, and three participants (two `ON_TREK`, one `REGISTERED`). Because the trek started in the past, the delay scheduler of step 4.3 will raise alerts for both `ON_TREK` participants as soon as it runs. These demo passwords are for review only.
 
-Next step: 2.1. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
+JWT: `config/JwtProperties` binds `app.security.jwt-secret` and `token-ttl-minutes` and validates them at startup (secret required, at least 32 characters), so the app stops if `JWT_SECRET` is missing or short. `service/JwtService` issues HS256 tokens (subject is the username, `role` claim, issued-at and expiry from the injected `Clock`) and parses them, throwing `JwtException` for bad, tampered or expired tokens. `JwtServiceTest` has 5 passing tests. Nothing uses the service yet; the filter and login come in steps 2.2 and 2.3.
+
+Next step: 2.2. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
 
 Source of truth: `docs/BE_Assignment_PRD_Latest.md` (requirements), `docs/IMPLEMENTATION_PLAN.md` (design, phases, test inventory), `docs/STEPS.md` (build order).
 
