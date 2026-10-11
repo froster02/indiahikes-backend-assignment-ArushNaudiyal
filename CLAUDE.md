@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Phases 0, 1 and 2 done (steps 0.1 to 2.4) phases 3 and 4 done (steps 3.1 to 4.4) and steps 5.1 and 5.2 done.
+Phases 0, 1 and 2 done (steps 0.1 to 2.4) phases 3, 4 and 5 done (steps 3.1 to 5.3). All code is in place; phase 6 is documentation.
 
 Build and run: Gradle skeleton (`settings.gradle.kts`, `build.gradle.kts` with Spring Boot 3.3.13, Java 21 toolchain, Spotless, Gradle 8.14.3 wrapper). `src/main/resources/application.yml` has `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck; the database is published on `127.0.0.1:5432` for local DB clients) and `.dockerignore`. `./gradlew build -x test spotlessCheck` passes on JDK 21.
 
@@ -30,7 +30,7 @@ Seed data: `V2__seed_data.sql` adds users `admin` (ADMIN, password `Admin@12345`
 JWT: `config/JwtProperties` binds `app.security.jwt-secret` and `token-ttl-minutes` and validates them at startup (secret required, at least 32 characters), so the app stops if `JWT_SECRET` is missing or short. `service/JwtService` issues HS256 tokens (subject is the username, `role` claim, issued-at and expiry from the injected `Clock`) and parses them, throwing `JwtException` for bad, tampered or expired tokens. `JwtServiceTest` has 5 passing tests. 
 Security: `config/JwtAuthFilter` reads the Bearer token and authenticates that request only (authority `ROLE_ADMIN` or `ROLE_OPERATIONS`, principal is the username, no database lookup). `config/SecurityConfig` is stateless with CSRF, form login and basic auth off. Public: `POST /api/auth/login`, `/api/health`, `/error` (so clients see real 400 and 404 statuses), Swagger and API-doc paths. ADMIN only: `POST /api/treks`, `POST /api/treks/*/checkpoints`, `PATCH /api/treks/*/status`. Everything else needs any valid token, including alert acknowledge and resolve for both roles, following the plan's role matrix. Security rejections (401, 403) return the `ApiError` body through `config/SecurityErrorHandler`. `SecurityConfigTest` (7 tests, throwaway controller) covers the rules.
 
-Login: `POST /api/auth/login` (`web/AuthController`, `web/dto/LoginRequest` and `LoginResponse`) returns `token`, `tokenType` (`Bearer`) and `expiresInSeconds`. `service/AuthService` loads the user, checks the BCrypt hash (`PasswordEncoder` bean in `SecurityConfig`) and throws `BadCredentialsException` with one message for unknown user and wrong password, running a dummy hash comparison for unknown users to even out timing. Spring's generated default user is excluded in `TrekOpsApplication`. 151 tests pass across security, JWT, login, auditing, error handling, treks, participants and check-ins (including `ParticipantSearchRepositoryTest` and `CheckInRepositoryTest`, which run on H2 against the seed data). Checked live in Docker with the seeded users: admin and ops log in, wrong password and unknown user give 401, blank fields give 400, and an ops token gets 403 on `POST /api/treks`. No login rate limiting. A bad login returns 401 with the `ApiError` body.
+Login: `POST /api/auth/login` (`web/AuthController`, `web/dto/LoginRequest` and `LoginResponse`) returns `token`, `tokenType` (`Bearer`) and `expiresInSeconds`. `service/AuthService` loads the user, checks the BCrypt hash (`PasswordEncoder` bean in `SecurityConfig`) and throws `BadCredentialsException` with one message for unknown user and wrong password, running a dummy hash comparison for unknown users to even out timing. Spring's generated default user is excluded in `TrekOpsApplication`. 155 tests pass across security, JWT, login, auditing, error handling, treks, participants and check-ins (including `ParticipantSearchRepositoryTest` and `CheckInRepositoryTest`, which run on H2 against the seed data). Checked live in Docker with the seeded users: admin and ops log in, wrong password and unknown user give 401, blank fields give 400, and an ops token gets 403 on `POST /api/treks`. No login rate limiting. A bad login returns 401 with the `ApiError` body.
 
 Errors: `web/ApiError` is the one error body (`timestamp`, `status`, `error`, `message`, `path`, and an `errors` map of field to message for validation failures). `web/GlobalExceptionHandler` maps validation and malformed requests to 400, bad credentials to 401, access denied to 403, unknown paths and `ResourceNotFoundException` to 404, wrong method to 405, `ConflictException` to 409, `BusinessRuleException` to 422, and anything unexpected to a generic 500 with the detail only in the log. Services throw the three exceptions in the `exception` package. DTOs and mappers live in `web/dto` and `web/mapper`. `InvalidRequestException` also maps to 400. An unknown sort property gives 400, and page size is capped at 100 (`spring.data.web.pageable.max-page-size`). Checked live in Docker: every error path returns the JSON shape.
 
@@ -54,13 +54,15 @@ Service tests: every service has a Mockito unit test (64 tests); time-dependent 
 
 Controller tests: every controller has a `@WebMvcTest` slice (56 tests with the security and error handler tests). They import the real `SecurityConfig` and `SecurityErrorHandler`, mock the service, and log in with `SecurityMockMvcRequestPostProcessors.user(...).roles(...)`. They cover role rules (401, 403), validation (400 with `errors`), response shapes, paging and sort parameters and error mapping. A slice does not load JPA or the database; repository tests and the integration test cover that.
 
-Next step: 5.3. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
+Integration: `integration/SmokeIntegrationTest` starts the whole app (`@SpringBootTest`, `test` profile) on its own H2 database with a fixed clock of 2026-08-10 10:00 UTC. It checks both Flyway migrations, seed logins with BCrypt and roles, the 401 error body, and one flow: health, a 403 for ops creating a trek, a check-in and its 409 duplicate, the delay check raising 3 alerts then none, the log notification after commit, and acknowledge then resolve through the API.
+
+Next step: 6.1. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
 
 Source of truth: `docs/BE_Assignment_PRD_Latest.md` (requirements), `docs/IMPLEMENTATION_PLAN.md` (design, phases, test inventory), `docs/STEPS.md` (build order).
 
 Build notes: `./gradlew` needs JDK 21 on `JAVA_HOME`. Maven Central rate-limits some environments (HTTP 429); retry, or use a mirror configured outside the repo.
 
-## Planned commands
+## Commands
 
 ```bash
 ./gradlew build                                   # compile, test, jar

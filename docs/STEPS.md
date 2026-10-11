@@ -79,7 +79,7 @@ Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.m
   Be able to say: what each test proves, and why it uses mocks or a fixed clock.
 - [x] **5.2 Controller tests.** RBAC, validation, search, error shape.
   Be able to say: what a `@WebMvcTest` slice covers and what it does not.
-- [ ] **5.3 Integration smoke test.** Login and Flyway migration against H2.
+- [x] **5.3 Integration smoke test.** Login and Flyway migration against H2.
   Be able to say: what it catches that unit tests do not.
 
 ## Phase 6: Docs and finish
