@@ -3,6 +3,7 @@ package com.indiahikes.trekops.web;
 import com.indiahikes.trekops.service.CheckInService;
 import com.indiahikes.trekops.web.dto.CheckInResponse;
 import com.indiahikes.trekops.web.dto.RecordCheckInRequest;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Both roles may record check-ins. The recorder is always the logged in user. */
 @RestController
+@Tag(name = "Check-ins")
 @RequestMapping("/api/check-ins")
 public class CheckInController {
 

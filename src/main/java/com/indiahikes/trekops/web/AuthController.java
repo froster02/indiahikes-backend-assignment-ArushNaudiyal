@@ -3,6 +3,8 @@ package com.indiahikes.trekops.web;
 import com.indiahikes.trekops.service.AuthService;
 import com.indiahikes.trekops.web.dto.LoginRequest;
 import com.indiahikes.trekops.web.dto.LoginResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Tag(name = "Auth")
+@SecurityRequirements
 @RequestMapping("/api/auth")
 public class AuthController {
 

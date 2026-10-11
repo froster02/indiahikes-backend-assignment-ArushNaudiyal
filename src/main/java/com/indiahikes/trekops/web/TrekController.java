@@ -8,6 +8,7 @@ import com.indiahikes.trekops.web.dto.PageResponse;
 import com.indiahikes.trekops.web.dto.TrekDetailResponse;
 import com.indiahikes.trekops.web.dto.TrekResponse;
 import com.indiahikes.trekops.web.dto.TrekStatusRequest;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Role rules for these paths live in SecurityConfig. */
 @RestController
+@Tag(name = "Treks")
 @RequestMapping("/api/treks")
 public class TrekController {
 

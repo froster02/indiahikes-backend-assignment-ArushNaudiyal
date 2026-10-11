@@ -44,6 +44,14 @@ Each entry has: step, symptom, cause, resolution, status.
 - **Resolution:** removed `DATABASE_TO_UPPER=false` from the H2 URL in `application.yml`. Flyway and Hibernate then agree on names, and `AuditingRepositoryTest` runs the real V1 and V2 migrations on H2.
 - **Status:** resolved. Lesson: a setting is not verified until something runs it. The `test` profile was untested until this step.
 
+## 6. Health endpoint hung while the database was down
+
+- **Step:** 3.5.
+- **Symptom:** with the database container stopped, `GET /api/health` returned nothing within 15 seconds instead of reporting the database as down.
+- **Cause:** the health check asks the connection pool for a connection. Hikari waits up to 30 seconds by default before giving up.
+- **Resolution:** set `spring.datasource.hikari.connection-timeout` to 5000 ms in `application.yml`. Health now answers 503 with `database: DOWN` after about 5 seconds, and 200 again once the database is back.
+- **Status:** resolved.
+
 ## Notes (expected behaviour, not defects)
 
 - **Default profile outside Compose:** it points at host `db`, which only exists inside Docker Compose. Running it on the host fails with a connection error. Use the `local` profile for IDE runs.

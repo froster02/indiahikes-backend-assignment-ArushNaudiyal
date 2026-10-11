@@ -41,6 +41,11 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+// Writes build-info.properties so the health endpoint can report the app version.
+springBoot {
+    buildInfo()
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }

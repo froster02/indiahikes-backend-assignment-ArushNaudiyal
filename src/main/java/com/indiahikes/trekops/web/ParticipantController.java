@@ -7,6 +7,7 @@ import com.indiahikes.trekops.web.dto.ParticipantDetailResponse;
 import com.indiahikes.trekops.web.dto.ParticipantResponse;
 import com.indiahikes.trekops.web.dto.ParticipantStatusRequest;
 import com.indiahikes.trekops.web.dto.RegisterParticipantRequest;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Both roles may use every endpoint here. */
 @RestController
+@Tag(name = "Participants")
 @RequestMapping("/api/participants")
 public class ParticipantController {
 

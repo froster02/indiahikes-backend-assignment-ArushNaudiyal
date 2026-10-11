@@ -59,7 +59,7 @@ Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.m
   Be able to say: how a participant becomes `ON_TREK` and why the scheduler needs that, how filters compose, and why sort fields are whitelisted.
 - [x] **3.4 Check-in.** Trek match, duplicate check, timestamp default.
   Be able to say: the three validation rules and their status codes (422, 409, 201).
-- [ ] **3.5 Health and Swagger.** Public health endpoint, JWT in Swagger UI.
+- [x] **3.5 Health and Swagger.** Public health endpoint, JWT in Swagger UI.
   Be able to say: what is public and how the token is sent from Swagger.
 
 ## Phase 4: Scheduler, alerts, notifications

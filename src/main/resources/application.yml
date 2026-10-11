@@ -19,6 +19,9 @@ spring:
     url: ${DB_URL:jdbc:postgresql://db:5432/trekops}
     username: ${DB_USER:trekops}
     password: ${DB_PASSWORD:trekops}
+    hikari:
+      # Fail fast when the database is unreachable instead of waiting the 30 second default.
+      connection-timeout: 5000
   data:
     web:
       pageable:
