@@ -51,7 +51,7 @@ Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.m
 
 ## Phase 3: Core APIs
 
-- [ ] **3.1 DTOs, mappers, errors.** Request and response DTOs, request validation with Bean Validation annotations, `ApiError` record and the global exception handler. Validation failures return 400 with the failing fields.
+- [x] **3.1 DTOs, mappers, errors.** Request and response DTOs, request validation with Bean Validation annotations, `ApiError` record and the global exception handler. Validation failures return 400 with the failing fields.
   Be able to say: why DTOs, where validation happens, and why one error shape.
 - [ ] **3.2 Treks and checkpoints.** Create, read, status change, role restrictions.
   Be able to say: which role can do what, and why.

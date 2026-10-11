@@ -6,7 +6,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.indiahikes.trekops.common.ClockConfig;
 import com.indiahikes.trekops.config.SecurityConfig;
+import com.indiahikes.trekops.config.SecurityErrorHandler;
 import com.indiahikes.trekops.service.AuthService;
 import com.indiahikes.trekops.service.JwtService;
 import java.time.Duration;
@@ -20,7 +22,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(AuthController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, SecurityErrorHandler.class, ClockConfig.class})
 class AuthControllerTest {
 
   @Autowired private MockMvc mockMvc;
@@ -52,7 +54,9 @@ class AuthControllerTest {
     mockMvc
         .perform(
             post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(VALID_BODY))
-        .andExpect(status().isUnauthorized());
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.message").value("Invalid username or password"))
+        .andExpect(jsonPath("$.path").value("/api/auth/login"));
   }
 
   @Test
@@ -62,6 +66,8 @@ class AuthControllerTest {
             post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\":\"\",\"password\":\"x\"}"))
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("Validation failed"))
+        .andExpect(jsonPath("$.errors.username").exists());
   }
 }

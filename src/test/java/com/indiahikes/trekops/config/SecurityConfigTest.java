@@ -3,6 +3,7 @@ package com.indiahikes.trekops.config;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.indiahikes.trekops.domain.UserRole;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @WebMvcTest(controllers = SecurityConfigTest.ProbeController.class)
 @Import({
   SecurityConfig.class,
+  SecurityErrorHandler.class,
   JwtService.class,
   SecurityConfigTest.TestClockConfig.class,
   SecurityConfigTest.ProbeController.class
@@ -89,7 +91,12 @@ class SecurityConfigTest {
 
   @Test
   void protectedPathWithoutATokenReturns401() throws Exception {
-    mockMvc.perform(get("/api/probe")).andExpect(status().isUnauthorized());
+    mockMvc
+        .perform(get("/api/probe"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.status").value(401))
+        .andExpect(jsonPath("$.message").value("Authentication required"))
+        .andExpect(jsonPath("$.path").value("/api/probe"));
   }
 
   @Test
@@ -127,7 +134,9 @@ class SecurityConfigTest {
     String ops = bearer(UserRole.OPERATIONS);
     mockMvc
         .perform(post("/api/treks").header("Authorization", ops))
-        .andExpect(status().isForbidden());
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.status").value(403))
+        .andExpect(jsonPath("$.message").value("Access denied"));
     mockMvc
         .perform(post("/api/treks/1/checkpoints").header("Authorization", ops))
         .andExpect(status().isForbidden());

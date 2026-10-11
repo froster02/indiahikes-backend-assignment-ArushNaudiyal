@@ -5,14 +5,12 @@ import com.indiahikes.trekops.service.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /** Stateless JWT security. Role rules follow the permission matrix in the implementation plan. */
@@ -25,7 +23,8 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtService jwtService)
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http, JwtService jwtService, SecurityErrorHandler errorHandler)
       throws Exception {
     String admin = UserRole.ADMIN.name();
     http.csrf(AbstractHttpConfigurer::disable)
@@ -34,7 +33,7 @@ public class SecurityConfig {
         .logout(AbstractHttpConfigurer::disable)
         .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling(
-            e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+            e -> e.authenticationEntryPoint(errorHandler).accessDeniedHandler(errorHandler))
         .authorizeHttpRequests(
             auth ->
                 auth
