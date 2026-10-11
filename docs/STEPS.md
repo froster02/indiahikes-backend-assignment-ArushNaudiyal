@@ -55,7 +55,7 @@ Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.m
   Be able to say: why DTOs, where validation happens, and why one error shape.
 - [x] **3.2 Treks and checkpoints.** Create, read, status change, role restrictions.
   Be able to say: which role can do what, and why.
-- [ ] **3.3 Participants and search.** Register participant, participant detail with check-ins, status update (the way a participant becomes `ON_TREK`), and the search with Specifications, pagination and a sort whitelist.
+- [x] **3.3 Participants and search.** Register participant, participant detail with check-ins, status update (the way a participant becomes `ON_TREK`), and the search with Specifications, pagination and a sort whitelist.
   Be able to say: how a participant becomes `ON_TREK` and why the scheduler needs that, how filters compose, and why sort fields are whitelisted.
 - [ ] **3.4 Check-in.** Trek match, duplicate check, timestamp default.
   Be able to say: the three validation rules and their status codes (422, 409, 201).

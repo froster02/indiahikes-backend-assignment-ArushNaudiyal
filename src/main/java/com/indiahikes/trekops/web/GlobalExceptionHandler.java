@@ -2,6 +2,7 @@ package com.indiahikes.trekops.web;
 
 import com.indiahikes.trekops.exception.BusinessRuleException;
 import com.indiahikes.trekops.exception.ConflictException;
+import com.indiahikes.trekops.exception.InvalidRequestException;
 import com.indiahikes.trekops.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Clock;
@@ -42,6 +43,12 @@ public class GlobalExceptionHandler {
         .getFieldErrors()
         .forEach(error -> errors.putIfAbsent(error.getField(), error.getDefaultMessage()));
     return build(HttpStatus.BAD_REQUEST, "Validation failed", request, errors);
+  }
+
+  @ExceptionHandler(InvalidRequestException.class)
+  public ResponseEntity<ApiError> handleInvalidRequest(
+      InvalidRequestException ex, HttpServletRequest request) {
+    return build(HttpStatus.BAD_REQUEST, ex.getMessage(), request, null);
   }
 
   @ExceptionHandler(PropertyReferenceException.class)
