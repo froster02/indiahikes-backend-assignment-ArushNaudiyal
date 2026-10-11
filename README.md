@@ -4,7 +4,7 @@ Backend for the Trek Operations Platform take-home assignment. It tracks treks, 
 
 ## Status
 
-Planning stage. The PRD and the implementation plan are committed, the code is not written yet. Sections below describe the intended setup and get filled in with verified commands as each phase lands.
+Early build. Phase 0 (Gradle skeleton, configuration profiles, Docker files) and the domain entities are committed. There are no APIs, no Flyway migrations and no tests yet, so `docker compose up --build` fails at startup until the schema migration lands. Sections below describe the intended setup and get filled in with verified commands as each phase lands. Build order and progress are in [docs/STEPS.md](docs/STEPS.md).
 
 Documents:
 

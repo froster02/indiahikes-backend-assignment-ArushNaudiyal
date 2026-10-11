@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 * This is a hiring take-home assignment. Treat the repo as production quality and follow standard GitHub practice.
 * Ask the user before every `git push`. Never push without an explicit go-ahead in the same conversation.
 * Do not commit placeholder, ambiguous, speculative or unverified content. Docs must describe what exists, not what is hoped for.
-* Do not add repository collaborators until the user asks. The PRD lists `KartikWatts` and `Manasa-NL`, deferred for now.
+* Do not change repository collaborators unless the user asks. The PRD lists `KartikWatts` and `Manasa-NL`. On 2026-10-11 GitHub showed `KartikWatts` as a collaborator and a pending invitation for `Manasa-NL`. Step 6.5 in `docs/STEPS.md` verifies both.
 * The owner must be able to explain every file in a follow-up discussion, so keep code simple and readable over clever.
 * Log every problem that costs real time, with cause and fix, in `docs/ISSUES.md`. Add the entry in the same change that resolves it.
 

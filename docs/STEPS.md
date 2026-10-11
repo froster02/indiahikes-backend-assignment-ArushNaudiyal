@@ -51,12 +51,12 @@ Workflow for every step: explain what and why, read the diff, answer questions, 
 
 ## Phase 3: Core APIs
 
-- [ ] **3.1 DTOs, mappers, errors.** `ApiError` record and the global exception handler.
-  Be able to say: why DTOs, and why one error shape.
+- [ ] **3.1 DTOs, mappers, errors.** Request and response DTOs, request validation with Bean Validation annotations, `ApiError` record and the global exception handler. Validation failures return 400 with the failing fields.
+  Be able to say: why DTOs, where validation happens, and why one error shape.
 - [ ] **3.2 Treks and checkpoints.** Create, read, status change, role restrictions.
   Be able to say: which role can do what, and why.
-- [ ] **3.3 Participants and search.** Specifications, pagination, sort whitelist.
-  Be able to say: how filters compose and why sort fields are whitelisted.
+- [ ] **3.3 Participants and search.** Register participant, participant detail with check-ins, status update (the way a participant becomes `ON_TREK`), and the search with Specifications, pagination and a sort whitelist.
+  Be able to say: how a participant becomes `ON_TREK` and why the scheduler needs that, how filters compose, and why sort fields are whitelisted.
 - [ ] **3.4 Check-in.** Trek match, duplicate check, timestamp default.
   Be able to say: the three validation rules and their status codes (422, 409, 201).
 - [ ] **3.5 Health and Swagger.** Public health endpoint, JWT in Swagger UI.
@@ -92,3 +92,5 @@ Workflow for every step: explain what and why, read the diff, answer questions, 
   Be able to say: a stranger can run the project from the README alone.
 - [ ] **6.4 Clean checkout test.** Clone fresh, run `docker compose up --build`.
   Be able to say: the project runs on a machine that has nothing else installed.
+- [ ] **6.5 Collaborators.** Confirm the repository is private and that `KartikWatts` and `Manasa-NL` are collaborators (`gh api repos/<owner>/<repo>/collaborators` and `.../invitations`). Ask the owner before changing anything.
+  Be able to say: who has access and why the repository stays private.
