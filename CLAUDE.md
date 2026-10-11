@@ -13,9 +13,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Steps 0.1 to 0.5 done. Gradle skeleton: `settings.gradle.kts`, `build.gradle.kts` (Spring Boot 3.3.13, Java 21 toolchain, Spotless), the Gradle 8.14.3 wrapper and `TrekOpsApplication.java`. Config: `src/main/resources/application.yml` with `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck) and `.dockerignore`. `docker compose up --build` starts the app on port 8080 once `.env` has `JWT_SECRET` and `DB_PASSWORD`. `./gradlew build -x test spotlessCheck` passes on JDK 21. No domain code yet. Step 0.6 verifies the whole setup, then phase 1 starts.
+Phase 0 done (steps 0.1 to 0.6). Gradle skeleton: `settings.gradle.kts`, `build.gradle.kts` (Spring Boot 3.3.13, Java 21 toolchain, Spotless), the Gradle 8.14.3 wrapper and `TrekOpsApplication.java`. Config: `src/main/resources/application.yml` with `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck) and `.dockerignore`. `docker compose up --build` starts the app on port 8080 once `.env` has `JWT_SECRET` and `DB_PASSWORD`. `./gradlew build -x test spotlessCheck` passes on JDK 21. `docker compose up --build` was checked from a clean state: the app starts and answers HTTP 401 on port 8080. No domain code yet.
 
-Next step: 0.6. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
+Next step: 1.1. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
 
 Source of truth: `docs/BE_Assignment_PRD_Latest.md` (requirements), `docs/IMPLEMENTATION_PLAN.md` (design, phases, test inventory), `docs/STEPS.md` (build order).
 

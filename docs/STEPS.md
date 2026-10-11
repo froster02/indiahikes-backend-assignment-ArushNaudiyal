@@ -24,7 +24,7 @@ Workflow for every step: explain what and why, read the diff, answer questions, 
   Be able to say: how secrets stay out of git.
 - [x] **0.5 Docker.** Multi-stage `Dockerfile` and `docker-compose.yml` with a PostgreSQL healthcheck and `depends_on`.
   Be able to say: why multi-stage, and why `depends_on` needs a healthcheck.
-- [ ] **0.6 Verify.** `docker compose up --build` starts the empty app. `./gradlew build spotlessCheck` passes.
+- [x] **0.6 Verify.** `docker compose up --build` starts the empty app. `./gradlew build spotlessCheck` passes.
   Be able to say: what proves the empty app starts.
 
 ## Phase 1: Domain and persistence
