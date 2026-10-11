@@ -1,5 +1,6 @@
 package com.indiahikes.trekops.service;
 
+import com.indiahikes.trekops.domain.AlertStatus;
 import com.indiahikes.trekops.domain.CheckIn;
 import com.indiahikes.trekops.domain.Checkpoint;
 import com.indiahikes.trekops.domain.Participant;
@@ -9,6 +10,7 @@ import com.indiahikes.trekops.domain.User;
 import com.indiahikes.trekops.exception.BusinessRuleException;
 import com.indiahikes.trekops.exception.ConflictException;
 import com.indiahikes.trekops.exception.ResourceNotFoundException;
+import com.indiahikes.trekops.repository.AlertRepository;
 import com.indiahikes.trekops.repository.CheckInRepository;
 import com.indiahikes.trekops.repository.CheckpointRepository;
 import com.indiahikes.trekops.repository.ParticipantRepository;
@@ -17,6 +19,7 @@ import com.indiahikes.trekops.web.dto.CheckInResponse;
 import com.indiahikes.trekops.web.mapper.ParticipantMapper;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,7 +30,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CheckInService {
 
+  private static final List<AlertStatus> ACTIVE_ALERT =
+      List.of(AlertStatus.OPEN, AlertStatus.ACKNOWLEDGED);
+
   private final CheckInRepository checkInRepository;
+  private final AlertRepository alertRepository;
   private final ParticipantRepository participantRepository;
   private final CheckpointRepository checkpointRepository;
   private final UserRepository userRepository;
@@ -35,11 +42,13 @@ public class CheckInService {
 
   public CheckInService(
       CheckInRepository checkInRepository,
+      AlertRepository alertRepository,
       ParticipantRepository participantRepository,
       CheckpointRepository checkpointRepository,
       UserRepository userRepository,
       Clock clock) {
     this.checkInRepository = checkInRepository;
+    this.alertRepository = alertRepository;
     this.participantRepository = participantRepository;
     this.checkpointRepository = checkpointRepository;
     this.userRepository = userRepository;
@@ -49,7 +58,8 @@ public class CheckInService {
   /**
    * Rules, in order: both ids exist (404), the checkpoint is on the participant's trek (422), the
    * trek is ACTIVE (422), the participant is not DROPPED or COMPLETED (422), the time is not in the
-   * future (422), and the participant has not already checked in there (409).
+   * future (422), and the participant has not already checked in there (409). A late check-in also
+   * resolves any OPEN or ACKNOWLEDGED alert for the same participant and checkpoint.
    *
    * @param checkedInAt when the participant arrived; the current time when null
    * @param recordedByUsername the logged in user who records this
@@ -95,6 +105,10 @@ public class CheckInService {
     try {
       CheckIn saved =
           checkInRepository.saveAndFlush(new CheckIn(participant, checkpoint, time, recordedBy));
+      // The participant has now reported, so the delay alert is no longer needed.
+      alertRepository
+          .findByParticipantIdAndCheckpointIdAndStatusIn(participantId, checkpointId, ACTIVE_ALERT)
+          .forEach(alert -> alert.resolve(recordedBy, now));
       return ParticipantMapper.toResponse(saved);
     } catch (DataIntegrityViolationException e) {
       // Two requests passed the check above at the same moment. The unique constraint stops the

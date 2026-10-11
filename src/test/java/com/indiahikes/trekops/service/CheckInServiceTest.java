@@ -3,11 +3,14 @@ package com.indiahikes.trekops.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.indiahikes.trekops.domain.Alert;
+import com.indiahikes.trekops.domain.AlertStatus;
 import com.indiahikes.trekops.domain.CheckIn;
 import com.indiahikes.trekops.domain.Checkpoint;
 import com.indiahikes.trekops.domain.Participant;
@@ -19,6 +22,7 @@ import com.indiahikes.trekops.domain.UserRole;
 import com.indiahikes.trekops.exception.BusinessRuleException;
 import com.indiahikes.trekops.exception.ConflictException;
 import com.indiahikes.trekops.exception.ResourceNotFoundException;
+import com.indiahikes.trekops.repository.AlertRepository;
 import com.indiahikes.trekops.repository.CheckInRepository;
 import com.indiahikes.trekops.repository.CheckpointRepository;
 import com.indiahikes.trekops.repository.ParticipantRepository;
@@ -27,6 +31,7 @@ import com.indiahikes.trekops.web.dto.CheckInResponse;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,13 +45,19 @@ class CheckInServiceTest {
   private static final Instant NOW = Instant.parse("2026-08-10T10:00:00Z");
 
   private final CheckInRepository checkInRepository = mock(CheckInRepository.class);
+  private final AlertRepository alertRepository = mock(AlertRepository.class);
   private final ParticipantRepository participantRepository = mock(ParticipantRepository.class);
   private final CheckpointRepository checkpointRepository = mock(CheckpointRepository.class);
   private final UserRepository userRepository = mock(UserRepository.class);
   private final Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
   private final CheckInService service =
       new CheckInService(
-          checkInRepository, participantRepository, checkpointRepository, userRepository, clock);
+          checkInRepository,
+          alertRepository,
+          participantRepository,
+          checkpointRepository,
+          userRepository,
+          clock);
 
   private final UUID participantId = UUID.randomUUID();
   private final UUID checkpointId = UUID.randomUUID();
@@ -87,6 +98,20 @@ class CheckInServiceTest {
     assertThat(response.recordedBy()).isEqualTo("ops");
     assertThat(response.checkpointName()).isEqualTo("Sankri");
     verify(checkInRepository).saveAndFlush(any(CheckIn.class));
+  }
+
+  @Test
+  void lateCheckInResolvesTheActiveAlertForThatCheckpoint() {
+    Alert alert = new Alert(participant, checkpoint);
+    when(alertRepository.findByParticipantIdAndCheckpointIdAndStatusIn(
+            eq(participantId), eq(checkpointId), any()))
+        .thenReturn(List.of(alert));
+
+    service.record(participantId, checkpointId, null, "ops");
+
+    assertThat(alert.getStatus()).isEqualTo(AlertStatus.RESOLVED);
+    assertThat(alert.getResolvedBy().getUsername()).isEqualTo("ops");
+    assertThat(alert.getResolvedAt()).isEqualTo(NOW);
   }
 
   @Test
