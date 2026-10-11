@@ -90,5 +90,5 @@ Workflow for every step: check the step against `docs/BE_Assignment_PRD_Latest.m
   Be able to say: the weaknesses, the limits, and which AI-assisted parts were reviewed hardest.
 - [ ] **6.3 Final README and AI session logs.**
   Be able to say: a stranger can run the project from the README alone.
-- [ ] **6.4 Clean checkout test.** Clone fresh, run `docker compose up --build`.
+- [x] **6.4 Clean checkout test.** Clone fresh, run `docker compose up --build`.
   Be able to say: the project runs on a machine that has nothing else installed.

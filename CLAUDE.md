@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Phases 0, 1 and 2 done (steps 0.1 to 2.4) phases 3, 4 and 5 done (steps 3.1 to 5.3). All code is in place; phase 6 is documentation. Steps 6.1 and 6.2 done: `DOMAIN_MODEL.md`, `DECISIONS.md`, `SELF_REVIEW.md` and `TEST_NOTES.md` at the repo root describe the code as built. The TEST_NOTES curl walk-through and delay recipe were run live. `README.md` is final (setup, Compose, build, local run checked live, authentication, API, configuration, tests, seed data); the AI session logs for step 6.3 await the owner's decision on what to include.
+Phases 0, 1 and 2 done (steps 0.1 to 2.4) phases 3, 4 and 5 done (steps 3.1 to 5.3). All code is in place; phase 6 is documentation. Steps 6.1 and 6.2 done: `DOMAIN_MODEL.md`, `DECISIONS.md`, `SELF_REVIEW.md` and `TEST_NOTES.md` at the repo root describe the code as built. The TEST_NOTES curl walk-through and delay recipe were run live. `README.md` is final (setup, Compose, build, local run checked live, authentication, API, configuration, tests, seed data); the AI session logs for step 6.3 await the owner's decision on what to include. Step 6.4 done: a fresh clone with only `.env` copied from `.env.example` started with `docker compose up --build` (health UP, 12 seed alerts, Swagger) and passed `./gradlew build` (155 tests).
 
 Build and run: Gradle skeleton (`settings.gradle.kts`, `build.gradle.kts` with Spring Boot 3.3.13, Java 21 toolchain, Spotless, Gradle 8.14.3 wrapper). `src/main/resources/application.yml` has `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck; the database is published on `127.0.0.1:5432` for local DB clients) and `.dockerignore`. `./gradlew build -x test spotlessCheck` passes on JDK 21.
 
@@ -56,7 +56,7 @@ Controller tests: every controller has a `@WebMvcTest` slice (56 tests with the 
 
 Integration: `integration/SmokeIntegrationTest` starts the whole app (`@SpringBootTest`, `test` profile) on its own H2 database with a fixed clock of 2026-08-10 10:00 UTC. It checks both Flyway migrations, seed logins with BCrypt and roles, the 401 error body, and one flow: health, a 403 for ops creating a trek, a check-in and its 409 duplicate, the delay check raising 3 alerts then none, the log notification after commit, and acknowledge then resolve through the API.
 
-Next step: 6.3. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
+Next step: 6.3 (AI session logs). The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
 
 Source of truth: `docs/BE_Assignment_PRD_Latest.md` (requirements), `docs/IMPLEMENTATION_PLAN.md` (design, phases, test inventory), `docs/STEPS.md` (build order).
 
