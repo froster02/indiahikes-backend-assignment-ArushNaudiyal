@@ -12,9 +12,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Planning stage. Only `docs/` and `README.md` exist; there is no build file or source yet. The commands below come from `docs/IMPLEMENTATION_PLAN.md` and are not verified until the Gradle project is created. Update this section as code lands.
+Step 0.2 done: Gradle skeleton committed and pushed. It has `settings.gradle.kts`, `build.gradle.kts` (Spring Boot 3.3.13, Java 21 toolchain, Spotless), the Gradle 8.14.3 wrapper and `TrekOpsApplication.java`. `./gradlew build -x test spotlessCheck` passes on JDK 21. No `application.yml`, Dockerfile, `.gitignore` or domain code yet. Those are steps 0.3 to 0.5 and later.
 
-Source of truth: `docs/BE_Assignment_PRD_Latest.md` (requirements) and `docs/IMPLEMENTATION_PLAN.md` (design, phases, test inventory).
+Next step: 0.3. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
+
+Source of truth: `docs/BE_Assignment_PRD_Latest.md` (requirements), `docs/IMPLEMENTATION_PLAN.md` (design, phases, test inventory), `docs/STEPS.md` (build order).
+
+Build notes: `./gradlew` needs JDK 21 on `JAVA_HOME`. Maven Central rate-limits some environments (HTTP 429); retry, or use a mirror configured outside the repo.
 
 ## Planned commands
 
