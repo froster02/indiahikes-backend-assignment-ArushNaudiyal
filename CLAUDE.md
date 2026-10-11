@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-Phases 0 and 1 done (steps 0.1 to 1.4) and step 2.1 done.
+Phases 0 and 1 done (steps 0.1 to 1.4) and steps 2.1 and 2.2 done.
 
 Build and run: Gradle skeleton (`settings.gradle.kts`, `build.gradle.kts` with Spring Boot 3.3.13, Java 21 toolchain, Spotless, Gradle 8.14.3 wrapper). `src/main/resources/application.yml` has `default` (PostgreSQL from env vars), `local` (PostgreSQL on localhost) and `test` (H2) profiles. `.gitignore` and `.env.example` exist; real secrets go in the git-ignored `.env`. Docker: multi-stage `Dockerfile`, `docker-compose.yml` (app plus PostgreSQL 16 with a healthcheck; the database is published on `127.0.0.1:5432` for local DB clients) and `.dockerignore`. `./gradlew build -x test spotlessCheck` passes on JDK 21.
 
@@ -25,9 +25,10 @@ Schema: `src/main/resources/db/migration/V1__init_schema.sql` creates the six ta
 
 Seed data: `V2__seed_data.sql` adds users `admin` (ADMIN, password `Admin@12345`) and `ops` (OPERATIONS, password `Ops@12345`) stored as BCrypt hashes, the ACTIVE `Kedarkantha Trek` (start 2026-08-10 06:00 IST) with the six PRD checkpoints, and three participants (two `ON_TREK`, one `REGISTERED`). Because the trek started in the past, the delay scheduler of step 4.3 will raise alerts for both `ON_TREK` participants as soon as it runs. These demo passwords are for review only.
 
-JWT: `config/JwtProperties` binds `app.security.jwt-secret` and `token-ttl-minutes` and validates them at startup (secret required, at least 32 characters), so the app stops if `JWT_SECRET` is missing or short. `service/JwtService` issues HS256 tokens (subject is the username, `role` claim, issued-at and expiry from the injected `Clock`) and parses them, throwing `JwtException` for bad, tampered or expired tokens. `JwtServiceTest` has 5 passing tests. Nothing uses the service yet; the filter and login come in steps 2.2 and 2.3.
+JWT: `config/JwtProperties` binds `app.security.jwt-secret` and `token-ttl-minutes` and validates them at startup (secret required, at least 32 characters), so the app stops if `JWT_SECRET` is missing or short. `service/JwtService` issues HS256 tokens (subject is the username, `role` claim, issued-at and expiry from the injected `Clock`) and parses them, throwing `JwtException` for bad, tampered or expired tokens. `JwtServiceTest` has 5 passing tests. 
+Security: `config/JwtAuthFilter` reads the Bearer token and authenticates that request only (authority `ROLE_ADMIN` or `ROLE_OPERATIONS`, principal is the username, no database lookup). `config/SecurityConfig` is stateless with CSRF, form login and basic auth off. Public: `POST /api/auth/login`, `/api/health`, Swagger and API-doc paths. ADMIN only: `POST /api/treks`, `POST /api/treks/*/checkpoints`, `PATCH /api/treks/*/status`. Everything else needs any valid token, including alert acknowledge and resolve for both roles, following the plan's role matrix. 401 and 403 have empty bodies until `ApiError` exists in step 3.1. `SecurityConfigTest` (7 tests, throwaway controller) covers the rules. With no handler yet, `/api/health` and the login path return 401 live instead of 404, which is expected to change once those controllers exist. Spring's generated default user still appears in the logs until step 2.3 adds a user service. Login comes in step 2.3.
 
-Next step: 2.2. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
+Next step: 2.3. The step list with interview lines is in `docs/STEPS.md`. Update "Current state" and tick steps there as code lands.
 
 Source of truth: `docs/BE_Assignment_PRD_Latest.md` (requirements), `docs/IMPLEMENTATION_PLAN.md` (design, phases, test inventory), `docs/STEPS.md` (build order).
 
