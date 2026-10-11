@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,7 +20,9 @@ import com.indiahikes.trekops.domain.ParticipantStatus;
 import com.indiahikes.trekops.exception.ResourceNotFoundException;
 import com.indiahikes.trekops.service.JwtService;
 import com.indiahikes.trekops.service.ParticipantService;
+import com.indiahikes.trekops.web.dto.CheckInResponse;
 import com.indiahikes.trekops.web.dto.PageResponse;
+import com.indiahikes.trekops.web.dto.ParticipantDetailResponse;
 import com.indiahikes.trekops.web.dto.ParticipantResponse;
 import java.time.Instant;
 import java.util.List;
@@ -142,6 +145,45 @@ class ParticipantControllerTest {
   @Test
   void searchWithoutATokenIs401() throws Exception {
     mockMvc.perform(get("/api/participants")).andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void detailReturnsTheParticipantAndCheckIns() throws Exception {
+    when(participantService.get(PARTICIPANT_ID))
+        .thenReturn(
+            new ParticipantDetailResponse(
+                aarav(),
+                List.of(
+                    new CheckInResponse(
+                        UUID.randomUUID(),
+                        PARTICIPANT_ID,
+                        UUID.randomUUID(),
+                        "Dehradun",
+                        1,
+                        NOW,
+                        "ops"))));
+
+    mockMvc
+        .perform(get("/api/participants/" + PARTICIPANT_ID).with(ops()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.participant.name").value("Aarav Sharma"))
+        .andExpect(jsonPath("$.checkIns[0].checkpointName").value("Dehradun"))
+        .andExpect(jsonPath("$.checkIns[0].recordedBy").value("ops"));
+  }
+
+  @Test
+  void operationsChangesParticipantStatus() throws Exception {
+    when(participantService.changeStatus(PARTICIPANT_ID, ParticipantStatus.ON_TREK))
+        .thenReturn(aarav());
+
+    mockMvc
+        .perform(
+            patch("/api/participants/" + PARTICIPANT_ID + "/status")
+                .with(ops())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"status\":\"ON_TREK\"}"))
+        .andExpect(status().isOk());
+    verify(participantService).changeStatus(PARTICIPANT_ID, ParticipantStatus.ON_TREK);
   }
 
   @Test

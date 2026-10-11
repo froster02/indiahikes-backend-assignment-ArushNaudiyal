@@ -19,7 +19,9 @@ import com.indiahikes.trekops.exception.BusinessRuleException;
 import com.indiahikes.trekops.exception.ResourceNotFoundException;
 import com.indiahikes.trekops.service.JwtService;
 import com.indiahikes.trekops.service.TrekService;
+import com.indiahikes.trekops.web.dto.CheckpointResponse;
 import com.indiahikes.trekops.web.dto.PageResponse;
+import com.indiahikes.trekops.web.dto.TrekDetailResponse;
 import com.indiahikes.trekops.web.dto.TrekResponse;
 import java.time.Instant;
 import java.util.List;
@@ -122,6 +124,50 @@ class TrekControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.content[0].name").value("Kedarkantha Trek"))
         .andExpect(jsonPath("$.totalElements").value(1));
+  }
+
+  @Test
+  void detailReturnsTheTrekAndItsCheckpoints() throws Exception {
+    when(trekService.get(TREK_ID))
+        .thenReturn(
+            new TrekDetailResponse(
+                trek(TrekStatus.ACTIVE),
+                List.of(new CheckpointResponse(UUID.randomUUID(), 1, "Dehradun", 0))));
+
+    mockMvc
+        .perform(get("/api/treks/" + TREK_ID).with(ops()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.trek.name").value("Kedarkantha Trek"))
+        .andExpect(jsonPath("$.checkpoints[0].name").value("Dehradun"))
+        .andExpect(jsonPath("$.checkpoints[0].expectedAfterHours").value(0));
+  }
+
+  @Test
+  void adminAddsACheckpointAndGets201() throws Exception {
+    when(trekService.addCheckpoint(TREK_ID, "Sankri", 2, 8))
+        .thenReturn(new CheckpointResponse(UUID.randomUUID(), 2, "Sankri", 8));
+
+    mockMvc
+        .perform(
+            post("/api/treks/" + TREK_ID + "/checkpoints")
+                .with(admin())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Sankri\",\"sequenceNo\":2,\"expectedAfterHours\":8}"))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.sequenceNo").value(2));
+  }
+
+  @Test
+  void negativeHoursAndZeroSequenceAre400() throws Exception {
+    mockMvc
+        .perform(
+            post("/api/treks/" + TREK_ID + "/checkpoints")
+                .with(admin())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Bad\",\"sequenceNo\":0,\"expectedAfterHours\":-1}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errors.sequenceNo").exists())
+        .andExpect(jsonPath("$.errors.expectedAfterHours").exists());
   }
 
   @Test
