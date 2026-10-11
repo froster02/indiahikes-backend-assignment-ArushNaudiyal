@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CheckpointRepository extends JpaRepository<Checkpoint, UUID> {
 
   List<Checkpoint> findByTrekIdOrderBySequenceNo(UUID trekId);
+
+  boolean existsByTrekIdAndSequenceNo(UUID trekId, int sequenceNo);
 }

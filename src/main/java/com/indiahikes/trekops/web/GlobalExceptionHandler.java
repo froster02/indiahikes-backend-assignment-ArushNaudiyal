@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -41,6 +42,13 @@ public class GlobalExceptionHandler {
         .getFieldErrors()
         .forEach(error -> errors.putIfAbsent(error.getField(), error.getDefaultMessage()));
     return build(HttpStatus.BAD_REQUEST, "Validation failed", request, errors);
+  }
+
+  @ExceptionHandler(PropertyReferenceException.class)
+  public ResponseEntity<ApiError> handleBadSort(
+      PropertyReferenceException ex, HttpServletRequest request) {
+    return build(
+        HttpStatus.BAD_REQUEST, "Unknown sort property: " + ex.getPropertyName(), request, null);
   }
 
   @ExceptionHandler({
