@@ -173,3 +173,5 @@ src/main/resources/
 ## AI assistance
 
 This project was built with Claude Code, step by step, under the working rules in [CLAUDE.md](CLAUDE.md). [SELF_REVIEW.md](SELF_REVIEW.md) describes how the AI was used and checked.
+
+The raw Claude Code session logs are in [docs/ai-logs/](docs/ai-logs/), one JSON object per line. Both start with the project validation done after step 0.2. `df39e127` stops at step 1.2. `2b3d2ba0` repeats that start and continues through phase 6, ending at the moment it was copied, shortly before the final commit. The earlier sessions that wrote the plan and steps 0.1 to 0.2 are not included.
