@@ -147,7 +147,7 @@ Flyway migration `V2__seed_data.sql` loads:
 | Operations user | `ops` / `Ops@12345`, role `OPERATIONS` |
 | Trek | `Kedarkantha Trek`, `ACTIVE`, starts 2026-08-10 06:00 IST |
 | Checkpoints | Dehradun 0 h, Sankri 8 h, Juda Ka Talab 28 h, Kedarkantha Summit 48 h, Sankri 72 h, Dehradun 84 h |
-| Participants | Aarav Sharma and Diya Mehta (`ON_TREK`), Rohan Verma (`REGISTERED`) |
+| Participants | Aarav Sharma and Diya Mehta |
 
 Passwords are stored as BCrypt hashes. These are demo credentials; change them before any real use.
 
